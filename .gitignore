@@ -62,8 +62,9 @@ _deps
 Testing/lib/
 lib/
 
-# log4cplus logging files
+# log4cplus logging and binary files
 Output/Debug/*.txt
+ThirdParty/log4cplus-2.0.2/bin/
 
 # Result files
 Output/Results/*.xml

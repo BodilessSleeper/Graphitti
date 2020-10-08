@@ -65,6 +65,8 @@ lib/
 # log4cplus logging and binary files
 Output/Debug/*.txt
 ThirdParty/log4cplus-2.0.2/bin/
+ThirdParty/log4cplus-2.0.2/src/liblog4cplus.so*
+ThirdParty/log4cplus-2.0.2/include/log4cplus/config/defines.hxx
 
 # Result files
 Output/Results/*.xml

@@ -128,7 +128,7 @@ void Hdf5GrowthRecorder::compileHistories(IAllNeurons &neurons) {
       // record radius to history matrix
       radiiHistory[iNeuron] = radii[iNeuron];
 
-      DEBUG_MID(cout << "radii[" << iNeuron << ":" << radii[iNeuron] << "]" << endl;)
+      LOG4CPLUS_DEBUG(fileLogger_, "radii[" << iNeuron << ":" << radii[iNeuron] << "]" << endl);
    }
 
    writeRadiiRates();

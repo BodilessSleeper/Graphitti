@@ -192,7 +192,7 @@ SynapseIndexMap *AllSynapses::createSynapseIndexMap() {
       totalSynapseCounts += synapseCounts_[i];
    }
 
-   DEBUG (cout << "total_synapse_counts: " << totalSynapseCounts << endl;)
+   LOG4CPLUS_DEBUG(fileLogger_, "total_synapse_counts: " << totalSynapseCounts << endl);
 
    if (totalSynapseCounts == 0) {
       return NULL;

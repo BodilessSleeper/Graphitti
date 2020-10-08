@@ -41,18 +41,18 @@ void SparseMatrix::HashTable::resize(int s, int c)
 {
     // If nothing has changed, just clear the table to NULL
     if ((s == capacity) && (c == columns)) {
-       LOG4CPLUS_TRACE(fileLogger_, "\t\t\tSM::HT::resize(): table capacity unchanged; filling with NULL." << endl);
+       LOG4CPLUS_TRACE(theMatrix->fileLogger_, "\t\t\tSM::HT::resize(): table capacity unchanged; filling with NULL." << endl);
        fill(table.begin(), table.end(), static_cast<Element *>(NULL));
        size = 0;
     } else {
-       LOG4CPLUS_TRACE(fileLogger_, "\t\t\tSM::HT::resize(): table capacity changed." << endl);
+       LOG4CPLUS_TRACE(theMatrix->fileLogger_, "\t\t\tSM::HT::resize(): table capacity changed." << endl);
        capacity = s;
        columns = c;
        table.resize(capacity, static_cast<Element *>(NULL));
        size = 0;
     }
 
-    LOG4CPLUS_TRACE(fileLogger_, "\t\t\tAllocated " << capacity << " locations for hash table" << endl);
+    LOG4CPLUS_TRACE(theMatrix->fileLogger_, "\t\t\tAllocated " << capacity << " locations for hash table" << endl);
 }
 
 /*
@@ -83,8 +83,8 @@ void SparseMatrix::HashTable::insert(Element* el)
     int start = hash(el);
     int loc = start;
 
-    LOG4CPLUS_TRACE(fileLogger_, "\tInserting value " << el->value << " at ("
-                                                      << el->row << ", " << el->column << ")" << endl);
+    LOG4CPLUS_TRACE(theMatrix->fileLogger_, "\tInserting value " << el->value << " at ("
+                                                                 << el->row << ", " << el->column << ")" << endl);
 
     // Find first location to insert (if Element isn't in the table)
     while ((table[loc] != &deleted) && (table[loc] != NULL)) {
@@ -114,7 +114,7 @@ void SparseMatrix::HashTable::insert(Element* el)
     table[loc] = el;
     size++;
 
-    LOG4CPLUS_TRACE(fileLogger_, "\tInserted at table location " << loc << endl);
+    LOG4CPLUS_TRACE(theMatrix->fileLogger_, "\tInserted at table location " << loc << endl);
 }
 
 /*

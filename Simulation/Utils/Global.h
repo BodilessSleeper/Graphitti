@@ -116,8 +116,6 @@ extern double t_gpu_calcSummation;
 void printPerformanceMetrics(const float total_time, int steps);
 #endif // PERFORMANCE_METRICS
 
-#endif
-
 // TODO comment
 extern const string MATRIX_TYPE;
 // TODO comment

@@ -143,7 +143,7 @@ void Layout::printParameters() const {
 /// Creates a neurons type map.
 /// @param  numNeurons number of the neurons to have in the type map.
 void Layout::generateNeuronTypeMap(int numNeurons) {
-   DEBUG(cout << "\nInitializing neuron type map" << endl;);
+   LOG4CPLUS_DEBUG(fileLogger_, "\nInitializing neuron type map" << endl);
 
    for (int i = 0; i < numNeurons; i++) {
       neuronTypeMap_[i] = EXC;

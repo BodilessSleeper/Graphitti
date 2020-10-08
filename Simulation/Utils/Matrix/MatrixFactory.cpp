@@ -36,6 +36,7 @@ void MatrixFactory::GetAttributes(TiXmlElement* matElement,
 {
   const char* temp = NULL;
 
+// TODO replace this ad hoc tracing with log4cplus logging
 #ifdef MDEBUG
   cerr << "Getting attributes:" << endl;
 #endif

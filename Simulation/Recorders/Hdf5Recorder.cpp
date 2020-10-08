@@ -30,6 +30,8 @@ Hdf5Recorder::Hdf5Recorder() :
    spikesProbedNeurons(NULL) {
    // TODO: I don't think these member variables exist in the .h file
    resultFileName_ = Simulator::getInstance().getResultFileName();
+
+   fileLogger_ = log4cplus::Logger::getInstance(LOG4CPLUS_TEXT("file"));
 }
 
 Hdf5Recorder::~Hdf5Recorder()

@@ -12,10 +12,11 @@
  using only Matrix objects.
 */
 
-#ifndef _MATRIX_H_
-#define _MATRIX_H_
+#pragma once
 
 #include <string>
+#include <log4cplus/loggingmacros.h>
+
 #include "MatrixExceptions.h"
 #include "BGTypes.h"
 
@@ -73,6 +74,8 @@ class Matrix
          BGFLOAT multiplier;     /// Constant used for initialization
          int dimensions;         /// One or two dimensional
 
+         // Loggers used to print to using log4cplus logging macros
+         log4cplus::Logger fileLogger_;   // Logs to Output/Debug/logging.txt
       };
 
 /**
@@ -84,6 +87,6 @@ class Matrix
  */
 ostream& operator<<(ostream& os, const Matrix& obj);
 
-#endif
+
 
 

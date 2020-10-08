@@ -6,8 +6,6 @@ float g_time;
 cudaEvent_t start, stop;
 #endif // PERFORMANCE_METRICS
 
-__constant__ int d_debug_mask[1];
-
 GPUSpikingModel::GPUSpikingModel() :
   Model::Model(),
   synapseIndexMapDevice(NULL),
@@ -66,8 +64,7 @@ void GPUSpikingModel::setupSim()
 {
   // Set device ID
   HANDLE_ERROR( cudaSetDevice( g_deviceId ) );
-  // Set DEBUG flag
-  HANDLE_ERROR( cudaMemcpyToSymbol (d_debug_mask, &g_debug_mask, sizeof(int) ) );
+ 
   Model::setupSim();
 
   //initialize Mersenne Twister

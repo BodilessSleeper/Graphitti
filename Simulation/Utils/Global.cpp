@@ -11,15 +11,6 @@
 #include "RNG/MersenneTwister.h"
 #include "RNG/Norm.h"
 
-// Debugging log data and routines
-// see "global.h" for bitmask usage of debug outputs
-int g_debug_mask
-#if DEBUG_OUT
-		= DEBUG_LOG_LOW;
-#else
-		= 0;
-#endif
-
 /*
  *  Converts the given index to a string with the indexes of a two-dimensional array.
  *  @param  i   index to be converted.

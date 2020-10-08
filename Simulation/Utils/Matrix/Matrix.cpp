@@ -19,7 +19,11 @@
 // Initialize attributes at construction time
 // The subclass constructor must set dimensions
 Matrix::Matrix(string t, string i, int r, int c, BGFLOAT m)
-  : type(t), init(i), rows(r), columns(c), multiplier(m), dimensions(0) {}
+  : type(t), init(i), rows(r), columns(c), multiplier(m), dimensions(0)
+  {
+     // Get a copy of the file logger to use log4cplus macros to output to debug files
+     fileLogger_ = log4cplus::Logger::getInstance(LOG4CPLUS_TEXT("file"));
+  }
 
 
 /*

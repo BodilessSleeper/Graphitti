@@ -39,43 +39,54 @@ CompleteMatrix::CompleteMatrix(string t, string i, int r,
                                int c, BGFLOAT m, string values)
 : Matrix(t, i, r, c, m), theMatrix(NULL)
 {
-    DEBUG_MATRIX(cerr << "Creating CompleteMatrix, size: ";)
-    
-    // Bail out if we're being asked to create nonsense
-    if (!((rows > 0) && (columns > 0)))
-        throw Matrix_invalid_argument("CompleteMatrix::CompleteMatrix(): Asked to create zero-size");
-    
-    // We're a 2D Matrix, even if only one row or column
-    dimensions = 2;
-    
-    DEBUG_MATRIX( cerr << rows << "X" << columns << ":" << endl;)
-    
-    // Allocate storage
-    alloc(rows, columns);
-    
-    if (values != "") {     // Initialize from the text string
-        istringstream valStream(values);
-        if (type == "diag") {       // diagonal matrix with values given
-            for (int i=0; i<rows; i++) {
-                for (int j=0; j<columns; j++) {
-                    theMatrix[i][j] = 0.0;    // Non-diagonal elements are zero
-                    if (i == j) {
-                        valStream >> theMatrix[i][j];
-                        theMatrix[i][j] *= multiplier;
-                    }
-                }
+   LOG4CPLUS_TRACE(fileLogger_, "Creating CompleteMatrix, ");
+
+   // Bail out if we're being asked to create nonsense
+   if (!((rows > 0) && (columns > 0)))
+      throw Matrix_invalid_argument("CompleteMatrix::CompleteMatrix(): Asked to create zero-size");
+
+   // We're a 2D Matrix, even if only one row or column
+   dimensions = 2;
+
+   LOG4CPLUS_TRACE(fileLogger_, "size: " << rows << "X" << columns << ":" << endl);
+
+   // Allocate storage
+   alloc(rows, columns);
+
+   if (values != "")
+   { // Initialize from the text string
+      istringstream valStream(values);
+      if (type == "diag")
+      { // diagonal matrix with values given
+         for (int i = 0; i < rows; i++)
+         {
+            for (int j = 0; j < columns; j++)
+            {
+               theMatrix[i][j] = 0.0; // Non-diagonal elements are zero
+               if (i == j)
+               {
+                  valStream >> theMatrix[i][j];
+                  theMatrix[i][j] *= multiplier;
+               }
             }
-        } else if (type == "complete") { // complete matrix with values given
-            for (int i=0; i<rows; i++) {
-                for (int j=0; j<columns; j++) {
-                    valStream >> theMatrix[i][j];
-                    theMatrix[i][j] *= multiplier;
-                }
+         }
+      }
+      else if (type == "complete")
+      { // complete matrix with values given
+         for (int i = 0; i < rows; i++)
+         {
+            for (int j = 0; j < columns; j++)
+            {
+               valStream >> theMatrix[i][j];
+               theMatrix[i][j] *= multiplier;
             }
-        } else {
-            clear();
-            throw Matrix_invalid_argument("Illegal type for CompleteMatrix with 'none' init: " + type);
-        }
+         }
+      }
+      else
+      {
+         clear();
+         throw Matrix_invalid_argument("Illegal type for CompleteMatrix with 'none' init: " + type);
+      }
     } else if (init == "const") {
         if (type == "diag") {       // diagonal matrix with constant values
             for (int i=0; i<rows; i++) {
@@ -97,22 +108,21 @@ CompleteMatrix::CompleteMatrix(string t, string i, int r,
         }
     }
     //  else if (init == "random")
-    DEBUG_MATRIX(cerr << "\tInitialized " << type << " matrix" << endl;)
+    LOG4CPLUS_TRACE(fileLogger_, "\tInitialized " << type << " matrix" << endl);
 }
-
 
 // "Copy Constructor"
 CompleteMatrix::CompleteMatrix(const CompleteMatrix& oldM) : theMatrix(NULL)
 {
-    DEBUG_MATRIX(cerr << "CompleteMatrix copy constructor:" << endl;)
-    copy(oldM);
+   LOG4CPLUS_TRACE(fileLogger_, "CompleteMatrix copy constructor:" << endl);
+   copy(oldM);
 }
 
 // Destructor
 CompleteMatrix::~CompleteMatrix()
 {
-    DEBUG_MATRIX(cerr << "Destroying CompleteMatrix" << endl;)
-    clear();
+   LOG4CPLUS_TRACE(fileLogger_, "Destroying CompleteMatrix" << endl);
+   clear();
 }
 
 
@@ -121,51 +131,51 @@ CompleteMatrix& CompleteMatrix::operator=(const CompleteMatrix& rhs)
 {
     if (&rhs == this)
         return *this;
-    
-    DEBUG_MATRIX(cerr << "CompleteMatrix::operator=" << endl;)
-    
+
+    LOG4CPLUS_TRACE(fileLogger_, "CompleteMatrix::operator=" << endl);
+
     clear();
-    DEBUG_MATRIX(cerr << "\t\tclear() complete, ready to copy." << endl;)
+    LOG4CPLUS_TRACE(fileLogger_, "\t\tclear() complete, ready to copy." << endl);
     copy(rhs);
-    DEBUG_MATRIX(cerr << "\t\tcopy() complete; returning by reference." << endl;)
+    LOG4CPLUS_TRACE(fileLogger_, "\t\tcopy() complete; returning by reference." << endl);
     return *this;
 }
 
 // Clear out storage
 void CompleteMatrix::clear(void)
 {
-    DEBUG_MATRIX(cerr << "\tclearing " << rows << "X" << columns << " CompleteMatrix...";)
-    
-    if (theMatrix != NULL) {
-        for (int i=0; i<rows; i++)
-            if (theMatrix[i] != NULL) {
-                delete [] theMatrix[i];
-                theMatrix[i] = NULL;
-            }
-        delete [] theMatrix;
-        theMatrix = NULL;
-    }
-    DEBUG_MATRIX(cerr << "done." << endl;)
-}
+   LOG4CPLUS_TRACE(fileLogger_, "\tclearing " << rows << "X" << columns << " CompleteMatrix...");
 
+   if (theMatrix != NULL)
+   {
+      for (int i = 0; i < rows; i++)
+         if (theMatrix[i] != NULL)
+         {
+            delete[] theMatrix[i];
+            theMatrix[i] = NULL;
+         }
+      delete[] theMatrix;
+      theMatrix = NULL;
+    }
+    LOG4CPLUS_TRACE(fileLogger_, "done." << endl);
+}
 
 // Copy matrix to this one
 void CompleteMatrix::copy(const CompleteMatrix& source)
 {
-    DEBUG_MATRIX(cerr << "\tcopying " << source.rows << "X" << source.columns
-                 << " CompleteMatrix...";)
-    
-    SetAttributes(source.type, source.init, source.rows,
-                  source.columns, source.multiplier, source.dimensions);
-    
-    alloc(rows, columns);
-    
-    for (int i=0; i<rows; i++)
-        for (int j=0; j<columns; j++)
-            theMatrix[i][j] = source.theMatrix[i][j];
-    DEBUG_MATRIX(cerr << "\t\tdone." << endl;)
-}
+   LOG4CPLUS_TRACE(fileLogger_, "\tcopying " << source.rows << "X" << source.columns
+                                             << " CompleteMatrix...");
 
+   SetAttributes(source.type, source.init, source.rows,
+                 source.columns, source.multiplier, source.dimensions);
+
+   alloc(rows, columns);
+
+   for (int i = 0; i < rows; i++)
+      for (int j = 0; j < columns; j++)
+         theMatrix[i][j] = source.theMatrix[i][j];
+   LOG4CPLUS_TRACE(fileLogger_, "\t\tdone." << endl);
+}
 
 // Allocate internal storage
 //
@@ -186,10 +196,8 @@ void CompleteMatrix::alloc(int rows, int columns)
     for (int i=0; i<rows; i++)
         if ((theMatrix[i] = new BGFLOAT[columns]) == NULL)
             throw Matrix_bad_alloc("Failed allocating storage to copy Matrix.");
-    DEBUG_MATRIX(cerr << "\tStorage allocated for "<< rows << "X" << columns << " Matrix." << endl;)
-    
+    LOG4CPLUS_TRACE(fileLogger_, "\tStorage allocated for " << rows << "X" << columns << " Matrix." << endl);
 }
-
 
 /*
  @brief Polymorphic output. Produces text output on stream os. Used by operator<<()

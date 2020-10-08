@@ -18,8 +18,6 @@
 #include "Global.h"
 #include "SparseMatrix.h"
 
-extern bool debugSparseMatrix;
-
 // hash table methods and static members
 /*
  @class HashTable
@@ -43,18 +41,18 @@ void SparseMatrix::HashTable::resize(int s, int c)
 {
     // If nothing has changed, just clear the table to NULL
     if ((s == capacity) && (c == columns)) {
-        DEBUG_SPARSE(cerr << "\t\t\tSM::HT::resize(): table capacity unchanged; filling with NULL." << endl;)
-        fill(table.begin(), table.end(), static_cast<Element*>(NULL));
-        size = 0;
+       LOG4CPLUS_TRACE(fileLogger_, "\t\t\tSM::HT::resize(): table capacity unchanged; filling with NULL." << endl);
+       fill(table.begin(), table.end(), static_cast<Element *>(NULL));
+       size = 0;
     } else {
-        DEBUG_SPARSE(cerr << "\t\t\tSM::HT::resize(): table capacity changed." << endl;)
-        capacity = s;
-        columns = c;
-        table.resize(capacity, static_cast<Element*>(NULL));
-        size = 0;
+       LOG4CPLUS_TRACE(fileLogger_, "\t\t\tSM::HT::resize(): table capacity changed." << endl);
+       capacity = s;
+       columns = c;
+       table.resize(capacity, static_cast<Element *>(NULL));
+       size = 0;
     }
-    
-	DEBUG_SPARSE(cerr << "\t\t\tAllocated " << capacity << " locations for hash table" << endl;)
+
+    LOG4CPLUS_TRACE(fileLogger_, "\t\t\tAllocated " << capacity << " locations for hash table" << endl);
 }
 
 /*
@@ -84,10 +82,10 @@ void SparseMatrix::HashTable::insert(Element* el)
     
     int start = hash(el);
     int loc = start;
-    
-	DEBUG_SPARSE(cerr << "\tInserting value " << el->value << " at ("
-                 << el->row << ", " << el->column << ")" << endl;)
-    
+
+    LOG4CPLUS_TRACE(fileLogger_, "\tInserting value " << el->value << " at ("
+                                                      << el->row << ", " << el->column << ")" << endl);
+
     // Find first location to insert (if Element isn't in the table)
     while ((table[loc] != &deleted) && (table[loc] != NULL)) {
         if (*table[loc] == *el)
@@ -115,10 +113,9 @@ void SparseMatrix::HashTable::insert(Element* el)
     // table[loc] is the first available storage location.
     table[loc] = el;
     size++;
-    
-	DEBUG_SPARSE(cerr << "\tInserted at table location " << loc << endl;)
-}
 
+    LOG4CPLUS_TRACE(fileLogger_, "\tInserted at table location " << loc << endl);
+}
 
 /*
  @method retrieve
@@ -189,33 +186,32 @@ SparseMatrix::SparseMatrix(int r, int c, BGFLOAT m, TiXmlElement* e)
 : Matrix("sparse", "none", r, c, m), theRows(NULL), theColumns(NULL),
 theElements(MaxElements(r,c), c, this)
 {
-	DEBUG_SPARSE(cerr << "Creating SparseMatrix, size: ";)
-    
-    // Bail out if we're being asked to create nonsense
-    if (!((rows > 0) && (columns > 0)))
-        throw Matrix_invalid_argument("SparseMatrix::SparseMatrix(): Asked to create zero-size");
-    
-    // We're a 2D Matrix, even if only one row or column
-    dimensions = 2;
-    
-	DEBUG_SPARSE(cerr << rows << "X" << columns << ":" << endl;)
-    
-    // Allocate storage for row and column lists (hash table already
-    // allocated at initialization time; see initializer list, above).
-    if ((theRows = new list<Element*>[rows]) == NULL)
-        throw Matrix_bad_alloc("Failed allocating storage for SparseMatrix.");
-    if ((theColumns = new list<Element*>[columns]) == NULL)
-        throw Matrix_bad_alloc("Failed allocating storage for SparseMatrix.");
-    
-    // Initialize from the XML
-    for (TiXmlElement* rowElement = e->FirstChildElement("Row");
-         rowElement != NULL;
-         rowElement = rowElement->NextSiblingElement("Row"))
-        rowFromXML(rowElement);
-    
-	DEBUG_SPARSE(cerr << "\tInitialized " << type << " matrix" << endl;)
-}
+   LOG4CPLUS_TRACE(fileLogger_, "Creating SparseMatrix, size: ");
 
+   // Bail out if we're being asked to create nonsense
+   if (!((rows > 0) && (columns > 0)))
+      throw Matrix_invalid_argument("SparseMatrix::SparseMatrix(): Asked to create zero-size");
+
+   // We're a 2D Matrix, even if only one row or column
+   dimensions = 2;
+
+   LOG4CPLUS_TRACE(fileLogger_, rows << "X" << columns << ":" << endl);
+
+   // Allocate storage for row and column lists (hash table already
+   // allocated at initialization time; see initializer list, above).
+   if ((theRows = new list<Element *>[rows]) == NULL)
+      throw Matrix_bad_alloc("Failed allocating storage for SparseMatrix.");
+   if ((theColumns = new list<Element *>[columns]) == NULL)
+      throw Matrix_bad_alloc("Failed allocating storage for SparseMatrix.");
+
+   // Initialize from the XML
+   for (TiXmlElement *rowElement = e->FirstChildElement("Row");
+        rowElement != NULL;
+        rowElement = rowElement->NextSiblingElement("Row"))
+      rowFromXML(rowElement);
+
+   LOG4CPLUS_TRACE(fileLogger_, "\tInitialized " << type << " matrix" << endl);
+}
 
 /*
  @method SparseMatrix
@@ -234,43 +230,48 @@ SparseMatrix::SparseMatrix(int r, int c, BGFLOAT m, const char* v)
 : Matrix("sparse", "none", r, c, m), theRows(NULL), theColumns(NULL),
 theElements(MaxElements(r,c), c, this)
 {
-	DEBUG_SPARSE(cerr << "\tCreating diagonal sparse matrix" << endl;)
-    // Bail out if we're being asked to create nonsense
-    if (!((rows > 0) && (columns > 0)))
-        throw Matrix_invalid_argument("SparseMatrix::SparseMatrix(): Asked to create zero-size");
-    
-    // We're a 2D Matrix, even if only one row or column
-    dimensions = 2;
-    
-	DEBUG_SPARSE(cerr << rows << "X" << columns << ":" << endl;)
-    
-    // Allocate storage for row and column lists (hash table already
-    // allocated at initialization time; see initializer list, above).
-    if ((theRows = new list<Element*>[rows]) == NULL)
-        throw Matrix_bad_alloc("Failed allocating storage for SparseMatrix.");
-    if ((theColumns = new list<Element*>[columns]) == NULL)
-        throw Matrix_bad_alloc("Failed allocating storage for SparseMatrix.");
-    
-    if (multiplier == 0.0)  // If we're empty, then we're done.
-        return;
-    
-    if (v != NULL) {     // Initialize from string of numeric data
-        istringstream valStream(v);
-        for (int i=0; i<rows; i++) {
-            Element* el;
-            BGFLOAT val;
-            valStream >> val;
-            if ((el = new Element(i, i, val*multiplier)) == NULL)
-                throw Matrix_bad_alloc("Failed allocating storage for SparseMatrix.");
-            theRows[i].push_back(el);
-            theColumns[i].push_back(el);
-            try {
-                theElements.insert(el);
-            } catch(Matrix_invalid_argument e) {
-                cerr << "Failure during SparseMatrix string constructor: " << e.what() << endl;
-                exit(-1);
-            }
-        }
+   LOG4CPLUS_TRACE(fileLogger_, "\tCreating diagonal sparse matrix" << endl);
+   // Bail out if we're being asked to create nonsense
+   if (!((rows > 0) && (columns > 0)))
+      throw Matrix_invalid_argument("SparseMatrix::SparseMatrix(): Asked to create zero-size");
+
+   // We're a 2D Matrix, even if only one row or column
+   dimensions = 2;
+
+   LOG4CPLUS_TRACE(fileLogger_, rows << "X" << columns << ":" << endl);
+
+   // Allocate storage for row and column lists (hash table already
+   // allocated at initialization time; see initializer list, above).
+   if ((theRows = new list<Element *>[rows]) == NULL)
+      throw Matrix_bad_alloc("Failed allocating storage for SparseMatrix.");
+   if ((theColumns = new list<Element *>[columns]) == NULL)
+      throw Matrix_bad_alloc("Failed allocating storage for SparseMatrix.");
+
+   if (multiplier == 0.0) // If we're empty, then we're done.
+      return;
+
+   if (v != NULL)
+   { // Initialize from string of numeric data
+      istringstream valStream(v);
+      for (int i = 0; i < rows; i++)
+      {
+         Element *el;
+         BGFLOAT val;
+         valStream >> val;
+         if ((el = new Element(i, i, val * multiplier)) == NULL)
+            throw Matrix_bad_alloc("Failed allocating storage for SparseMatrix.");
+         theRows[i].push_back(el);
+         theColumns[i].push_back(el);
+         try
+         {
+            theElements.insert(el);
+         }
+         catch (Matrix_invalid_argument e)
+         {
+            cerr << "Failure during SparseMatrix string constructor: " << e.what() << endl;
+            exit(-1);
+         }
+      }
     } else {             // No string of data; initialize from multipler only
         for (int i=0; i<rows; i++) {
             Element* el;
@@ -302,7 +303,7 @@ SparseMatrix::SparseMatrix(int r, int c)
 : Matrix("sparse", "none", r, c, 0.0), theRows(NULL), theColumns(NULL),
 theElements(MaxElements(r,c), c, this)
 {
-	DEBUG_SPARSE(cerr << "\tCreating empty sparse matrix: ";)
+	LOG4CPLUS_TRACE(fileLogger_,"\tCreating empty sparse matrix: ");
     // Bail out if we're being asked to create nonsense
     if (!((rows > 0) && (columns > 0)))
         throw Matrix_invalid_argument("SparseMatrix::SparseMatrix(): Asked to create zero-size");
@@ -310,7 +311,7 @@ theElements(MaxElements(r,c), c, this)
     // We're a 2D Matrix, even if only one row or column
     dimensions = 2;
     
-	DEBUG_SPARSE(cerr << rows << "X" << columns << ":" << endl;)
+	LOG4CPLUS_TRACE(fileLogger_,rows << "X" << columns << ":" << endl);
     
     // Allocate storage for row and column lists (hash table already
     // allocated at initialization time; see initializer list, above).
@@ -331,12 +332,12 @@ SparseMatrix::SparseMatrix(const SparseMatrix& oldM)
 theRows(NULL), theColumns(NULL),
 theElements(MaxElements(oldM.rows,oldM.columns), oldM.columns, this)
 {
-	DEBUG_SPARSE(cerr << "SparseMatrix copy constructor:" << endl;)
+	LOG4CPLUS_TRACE(fileLogger_,"SparseMatrix copy constructor:" << endl);
     
     // We're a 2D Matrix, even if only one row or column
     dimensions = 2;
     
-	DEBUG_SPARSE(cerr << rows << "X" << columns << ":" << endl;)
+	LOG4CPLUS_TRACE(fileLogger_,rows << "X" << columns << ":" << endl);
     
     // Allocate storage for row and column lists (hash table already
     // allocated at initialization time; see initializer list, above).
@@ -357,7 +358,7 @@ theElements(MaxElements(oldM.rows,oldM.columns), oldM.columns, this)
 // Destructor
 SparseMatrix::~SparseMatrix()
 {
-	DEBUG_SPARSE(cerr << "Destroying SparseMatrix" << endl;)
+	LOG4CPLUS_TRACE(fileLogger_,"Destroying SparseMatrix" << endl);
 	clear();
 }
 
@@ -367,19 +368,19 @@ SparseMatrix& SparseMatrix::operator=(const SparseMatrix& rhs)
     if (&rhs == this)
         return *this;
     
-	DEBUG_SPARSE(cerr << "SparseMatrix::operator=" << endl;)
+	LOG4CPLUS_TRACE(fileLogger_,"SparseMatrix::operator=" << endl);
     
     clear();
-	DEBUG_SPARSE(cerr << "\t\tclear() complete, setting data member values." << endl;)
+	LOG4CPLUS_TRACE(fileLogger_,"\t\tclear() complete, setting data member values." << endl);
     
     SetAttributes(rhs.type, rhs.init, rhs.rows,
                   rhs.columns, rhs.multiplier, rhs.dimensions);
     
-	DEBUG_SPARSE(cerr << "\t\tvalues set, ready to allocate." << endl;)
+	LOG4CPLUS_TRACE(fileLogger_,"\t\tvalues set, ready to allocate." << endl);
     
     alloc();
     
-	DEBUG_SPARSE(cerr << "\t\talloc() complete, ready to copy." << endl;)
+	LOG4CPLUS_TRACE(fileLogger_,"\t\talloc() complete, ready to copy." << endl);
     
     try {
         copy(rhs);
@@ -388,14 +389,14 @@ SparseMatrix& SparseMatrix::operator=(const SparseMatrix& rhs)
         << "\tError was: " << e.what() << endl;
         exit(-1);
     }
-	DEBUG_SPARSE(cerr << "\t\tcopy() complete; returning by reference." << endl;)
+	LOG4CPLUS_TRACE(fileLogger_,"\t\tcopy() complete; returning by reference." << endl);
     return *this;
 }
 
 // Clear out storage
 void SparseMatrix::clear(void)
 {
-	DEBUG_SPARSE(cerr << "\tclearing " << rows << "X" << columns << " SparseMatrix...";)
+	LOG4CPLUS_TRACE(fileLogger_,"\tclearing " << rows << "X" << columns << " SparseMatrix...");
     
     // Since each Element is only allocated once (and shared among the
     // row and column lists and the hash table), we only need to
@@ -420,7 +421,7 @@ void SparseMatrix::clear(void)
     theRows = NULL;
     theColumns = NULL;
     
-	DEBUG_SPARSE(cerr << "done." << endl;)
+	LOG4CPLUS_TRACE(fileLogger_,"done." << endl);
 }
 
 
@@ -441,8 +442,8 @@ void SparseMatrix::remove_lists(Element* el)
 // Copy matrix to this one
 void SparseMatrix::copy(const SparseMatrix& source)
 {
-	DEBUG_SPARSE(cerr << "\t\t\tcopying " << source.rows << "X" << source.columns
-                 << " SparseMatrix...";)
+	LOG4CPLUS_TRACE(fileLogger_,"\t\t\tcopying " << source.rows << "X" << source.columns
+                 << " SparseMatrix...");
     
     // We will access the source row-wise, inserting new Elements into
     // the current SparseMatrix's row and column lists.
@@ -466,7 +467,7 @@ void SparseMatrix::copy(const SparseMatrix& source)
         }
     }
     
-	DEBUG_SPARSE(cerr << "\t\tdone." << endl;)
+	LOG4CPLUS_TRACE(fileLogger_,"\t\tdone." << endl);
 }
 
 // Read row from XML and add items to SparseMatrix
@@ -519,8 +520,8 @@ void SparseMatrix::alloc(void)
     // Set the hash table capacity
     theElements.resize(MaxElements(rows, columns), columns);
     
-	DEBUG_SPARSE(cerr << "\t\tStorage allocated for "<< rows << " row by "
-                 << columns << " column SparseMatrix." << endl;)
+	LOG4CPLUS_TRACE(fileLogger_,"\t\tStorage allocated for "<< rows << " row by "
+                 << columns << " column SparseMatrix." << endl);
     
 }
 

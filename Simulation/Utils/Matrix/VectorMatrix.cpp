@@ -33,7 +33,7 @@ Norm VectorMatrix::nRng;
  */
 VectorMatrix::VectorMatrix(string t, string i, int r, int c, BGFLOAT m, string values) :
 	Matrix(t, i, r, c, m), theVector(NULL) {
-	DEBUG_VECTOR(cerr << "Creating VectorMatrix, size: ";)
+	LOG4CPLUS_TRACE(fileLogger_, "Creating VectorMatrix, size: ");
 
 	// Bail out if we're being asked to create nonsense
 	if (!((rows == 1) || (columns == 1)) || (rows == 0) || (columns == 0))
@@ -43,7 +43,7 @@ VectorMatrix::VectorMatrix(string t, string i, int r, int c, BGFLOAT m, string v
 	dimensions = 1;
 	size = (rows > columns) ? rows : columns;
 
-	DEBUG_VECTOR(cerr << rows << "X" << columns << ":" << endl;)
+	LOG4CPLUS_TRACE(fileLogger_, rows << "X" << columns << ":" << endl);
 
 	alloc(size);
 
@@ -76,7 +76,7 @@ VectorMatrix::VectorMatrix(string t, string i, int r, int c, BGFLOAT m, string v
 		clear();
 		throw Matrix_invalid_argument("Illegal initialization for VectorMatrix: " + init);
 	}
-	DEBUG_VECTOR(cerr << "\tInitialized " << type << " vector to " << *this << endl;)
+	LOG4CPLUS_TRACE(fileLogger_, "\tInitialized " << type << " vector to " << *this << endl);
 }
 
 // Copy constructor
@@ -137,7 +137,7 @@ void VectorMatrix::alloc(int size) {
 		throw Matrix_bad_alloc("Failed allocating storage of Vector copy.");
 	}
 
-	DEBUG_VECTOR(cerr << "\tStorage allocated for "<< size << " element Vector." << endl;)
+	LOG4CPLUS_TRACE(fileLogger_, "\tStorage allocated for "<< size << " element Vector." << endl);
 
 }
 

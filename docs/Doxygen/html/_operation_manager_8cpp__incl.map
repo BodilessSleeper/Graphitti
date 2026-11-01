@@ -1,0 +1,26 @@
+<map id="Simulator/Core/OperationManager.cpp" name="Simulator/Core/OperationManager.cpp">
+<area shape="rect" id="Node000001" title="Singleton instance method that registers and executes functions based on operation types." alt="" coords="420,5,588,46"/>
+<area shape="rect" id="Node000002" href="$_operation_manager_8h.html" title="Singleton instance method that registers and executes functions based on operation types." alt="" coords="317,94,454,120"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="476,49,418,87,415,83,473,44"/>
+<area shape="rect" id="Node000004" title=" " alt="" coords="497,168,535,193"/>
+<area shape="poly" id="edge10_Node000001_Node000004" title=" " alt="" coords="508,46,517,152,511,152,503,46"/>
+<area shape="rect" id="Node000005" title=" " alt="" coords="560,168,627,193"/>
+<area shape="poly" id="edge9_Node000001_Node000005" title=" " alt="" coords="518,45,581,153,576,155,513,48"/>
+<area shape="rect" id="Node000009" title=" " alt="" coords="592,94,645,120"/>
+<area shape="poly" id="edge11_Node000001_Node000009" title=" " alt="" coords="534,44,590,83,587,87,531,49"/>
+<area shape="rect" id="Node000010" href="$_generic_function_node_8h.html" title="Stores a function to invoke. Used by operation manager to store functions to defined by an operation ..." alt="" coords="87,94,244,120"/>
+<area shape="poly" id="edge12_Node000001_Node000010" title=" " alt="" coords="420,49,233,93,232,87,419,44"/>
+<area shape="rect" id="Node000003" title=" " alt="" coords="5,168,83,193"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="325,123,99,170,98,164,323,118"/>
+<area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="409,118,485,159,482,164,406,123"/>
+<area shape="poly" id="edge4_Node000002_Node000005" title=" " alt="" coords="421,118,546,160,544,165,420,123"/>
+<area shape="rect" id="Node000006" title=" " alt="" coords="298,168,472,193"/>
+<area shape="poly" id="edge5_Node000002_Node000006" title=" " alt="" coords="388,120,388,152,383,152,383,120"/>
+<area shape="rect" id="Node000007" href="$_i_function_node_8h.html" title="Interface for storing and invoking functions. Used to support different FunctionNode classes that def..." alt="" coords="107,168,224,193"/>
+<area shape="poly" id="edge6_Node000002_Node000007" title=" " alt="" coords="349,123,218,165,216,160,347,118"/>
+<area shape="rect" id="Node000008" href="$_operations_8h.html" title="This class is public reference to the operation types that the OperationManager can register and exec..." alt="" coords="166,241,260,267"/>
+<area shape="poly" id="edge8_Node000002_Node000008" title=" " alt="" coords="362,122,326,143,288,170,258,200,233,231,229,227,254,197,285,166,323,138,359,118"/>
+<area shape="poly" id="edge7_Node000007_Node000008" title=" " alt="" coords="175,192,199,227,194,230,171,195"/>
+<area shape="poly" id="edge13_Node000010_Node000003" title=" " alt="" coords="146,123,79,162,76,157,143,118"/>
+<area shape="poly" id="edge14_Node000010_Node000007" title=" " alt="" coords="168,120,168,152,163,152,163,120"/>
+</map>
